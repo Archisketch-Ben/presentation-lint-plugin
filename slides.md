@@ -555,9 +555,9 @@ ruleTester.run('no-archidraw', rule, {
 
 이렇게 작성된 규칙을 ESLint 설정에 추가하면 개발자들이 개발 중 규칙에 맞지 않는 코드를 작성했을 때 알려주고 자동 수정 제안을 할 수 있습니다.
 
-![alt text](./trigger-error.png)
+![alt text](/trigger-error.png)
 
-![alt text](./fixer.png)
+![alt text](/fixer.png)
 
 ---
 transition: slide-left
@@ -567,7 +567,7 @@ transition: slide-left
 
 새로운 규칙을 제안하거나 버그가 있다면 [이슈 생성](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/new/choose) 페이지에서 제보할 수 있습니다.
 
-![alt text](./issues.png)
+![alt text](/issues.png)
 
 ---
 transition: fade-out
