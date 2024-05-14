@@ -555,9 +555,9 @@ ruleTester.run('no-archidraw', rule, {
 
 이렇게 작성된 규칙을 ESLint 설정에 추가하면 개발자들이 개발 중 규칙에 맞지 않는 코드를 작성했을 때 알려주고 자동 수정 제안을 할 수 있습니다.
 
-![alt text](trigger-error.png)
+![alt text](./trigger-error.png)
 
-![alt text](fixer.png)
+![alt text](./fixer.png)
 
 ---
 transition: slide-left
@@ -567,12 +567,355 @@ transition: slide-left
 
 새로운 규칙을 제안하거나 버그가 있다면 [이슈 생성](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/new/choose) 페이지에서 제보할 수 있습니다.
 
-![alt text](issues.png)
+![alt text](./issues.png)
 
 ---
+transition: fade-out
 ---
 
-## 
+## 시작하는 방법
+
+패키지 매니저는 `npm`을 사용합니다.
+
+작업을 시작하기 전에 시작점이 되는 모듈(build/index.js)을 생성해야 합니다:
+
+```bash
+npm run build
+```
+
+---
+transition: fade-out
+---
+
+### 규칙 작성
+
+이 프로젝트는 새로운 규칙 작성을 위한 <span v-mark.red="1">자동 생성 CLI를 제공</span>합니다. 아래 명령을 실행해주세요:
+
+```bash
+npm run generate-rule
+```
+
+````md magic-move
+```bash
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+```
+
+```bash {2-7}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+```
+
+```bash {8}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+```
+
+```bash {9}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+✔ 경고를 트리거하지 않는 코드의 간단한 예를 입력해주세요: … import {} from 'archidraw';
+```
+
+```bash {10}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+✔ 경고를 트리거하지 않는 코드의 간단한 예를 입력해주세요: … import {} from 'archidraw';
+✔ 경고를 트리거하는 코드의 간단한 예를 입력해주세요: … const name = 'archidraw';
+```
+
+```bash {11}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+✔ 경고를 트리거하지 않는 코드의 간단한 예를 입력해주세요: … import {} from 'archidraw';
+✔ 경고를 트리거하는 코드의 간단한 예를 입력해주세요: … const name = 'archidraw';
+✔ 경고를 트리거하는 코드에 대한 수정된 코드를 입력해주세요: … const name = 'archisketch';
+```
+
+```bash {12-15}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+✔ 경고를 트리거하지 않는 코드의 간단한 예를 입력해주세요: … import {} from 'archidraw';
+✔ 경고를 트리거하는 코드의 간단한 예를 입력해주세요: … const name = 'archidraw';
+✔ 경고를 트리거하는 코드에 대한 수정된 코드를 입력해주세요: … const name = 'archisketch';
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/lib/rules/no-archidraw.js
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/tests/lib/rules/no-archidraw.test.js
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/docs/rules/no-archidraw.md
+✔ 새로 생성된 파일을 VS Code에서 열까요? … no
+```
+
+```bash {16-17|all}
+✔ 규칙을 만드는 작성자의 이름을 입력해주세요: ben
+✔ 새 규칙의 이름을 입력해주세요! 다음 ESLint 규칙 네이밍 컨벤션을 따라야 합니다:
+
+- 규칙에서 무언가를 허용하지 않는 경우에는 no- 접두사를 붙이세요(예: eval()을 허용하지 않으려면 no-eval, 디버거를 허용하지 않으려면 no-debugger).
+- 규칙에서 특정 항목의 포함을 강제하는 경우에는 특별한 접두사 없이 짧은 이름을 사용하세요.
+- 단어 사이에는 대시(-)를 사용하세요.
+새 규칙의 이름은 무엇인가요? … no-archidraw
+✔ 규칙에 대한 간단한 설명을 입력해주세요: … 이전 사명 사용을 금지합니다.
+✔ 경고를 트리거하지 않는 코드의 간단한 예를 입력해주세요: … import {} from 'archidraw';
+✔ 경고를 트리거하는 코드의 간단한 예를 입력해주세요: … const name = 'archidraw';
+✔ 경고를 트리거하는 코드에 대한 수정된 코드를 입력해주세요: … const name = 'archisketch';
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/lib/rules/no-archidraw.js
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/tests/lib/rules/no-archidraw.test.js
+create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/docs/rules/no-archidraw.md
+✔ 새로 생성된 파일을 VS Code에서 열까요? … no
+ SUCCESS  
+🚀 새 규칙을 만들 준비가 되었어요! 규칙을 작성하고 나면 `npm run test`를 실행하고, 테스트까지 성공했다면 `npm run update:eslint-docs`를 실행해 문서를 업데이트해주세요.
+```
+````
+
+---
+transition: fade-out
+---
+
+### 생성된 파일 업데이트
+
+이제 다양한 규칙 메타데이터를 다루는 문서를 생성했고 업데이트되었습니다:
+
+<div v-click>
+
+- README.md 규칙 테이블
+- README.md 구성 테이블
+- 규칙 문서 제목 및 안내 문구
+- 규칙 문서 옵션 목록
+- 규칙 정의 파일
+- 규칙 테스트 파일
+
+</div>
+
+<div v-click>
+
+생성된 파일에서 필요한 파일을 수정하고 필요 없는 파일은 제거해주세요. 그리고 추천 구성에 들어가야 하는 규칙이라면 `lib/configs/recommended.js` 파일의 `rules` 객체에 규칙을 추가해주세요.
+
+```js twoslash
+/** @type {import('eslint').Linter.Config}*/
+module.exports = {
+  plugins: ['@archisketch-dev-team'],
+  rules: {
+    '@archisketch-dev-team/no-archidraw': 'error',
+    /* ... */
+  },
+};
+```
+
+</div>
+
+---
+transition: fade-out
+---
+
+### 문서 업데이트
+
+규칙을 개선하려면 lib/rules의 규칙 파일 이름과 일치하는 docs/rules의 문서의 규칙 설명을 업데이트해주세요. 그 뒤에 `npm run update:eslint-docs`를 실행하면 README.md의 규칙 테이블, README.md의 구성 테이블 및 해당 규칙 문서 헤더가 업데이트됩니다. 아래는 기존 `no-archidraw` 규칙을 `no-archisketch` 규칙으로 변경하는 예시입니다:
+
+````md magic-move
+```diff
+// 규칙 파일 이름을 변경합니다.
+- lib/rules/no-archidraw.js
++ lib/rules/no-archisketch.js
+```
+
+```diff
+// `lib/index.js` 파일에서 내보내는 모듈을 업데이트합니다.
+module.exports.rules = {
+-  'no-archidraw': require('./rules/no-archidraw'),
++  'no-archisketch': require('./rules/no-archisketch'),
+}
+```
+
+```diff
+// 문서 파일 이름을 변경합니다.
+- docs/rules/no-archidraw.md
++ docs/rules/no-archisketch.md
+```
+
+```diff
+// 문서 내용을 변경된 내용에 맞게 수정합니다.
+// @filename: docs/rules/no-archisketch.md
+이 규칙에 대한 **올바른** 코드의 예입니다:
+- const name = '아키스케치';
++ const name = '아키드로우';
+```
+
+```bash
+npm run update:eslint-docs
+```
+
+```diff
+// @filename: README.md
+- | [no-archidraw](docs/rules/no-archidraw.md) | 이전 사명 사용을 금지합니다.
++ | [no-archisketch](docs/rules/no-archisketch.md) | 이전 사명 사용을 금지합니다.
+```
+````
+
+버그 수정을 할 땐 문서가 변경될 필요는 없지만 기존 문서를 훑어보고 <span v-mark.red="6">제거해야 할 관련 경고가 있는지 확인</span>하는 것이 좋습니다.
+
+---
+transition: fade-out
+---
+
+### 코드 퀄리티 유지
+
+코드 퀄리티를 유지하기 위해 딱히 해야 할 작업은 없습니다. 기본적으로 git hook을 이용해 품질을 검사하기 때문입니다. 하지만 작업 중간중간 확인해보고 싶다면 아래 명령어를 실행하면 됩니다:
+
+```bash
+npm run all-in=one
+```
+
+위 명령어는 다음 방법으로 전체적인 코드의 품질을 검사합니다.
+
+---
+transition: slide-up
+---
+
+### 코드 퀄리티 유지
+
+크게 <span v-mark.red="0">커밋을 완료하기 전</span>에 <span v-mark.circle.red="0">커밋 메시지</span>와 <span v-mark.circle.red="1">변경된 문서, 스크립트</span>에 대한 검사를, 커밋을 <span v-mark.blue="2">푸시하기 전</span>에 <span v-mark.circle.blue="2">테스트 케이스</span>가 올바른지 검사합니다.
+
+````md magic-move
+```yaml
+# 커밋 메시지가 제안된 컨벤션에 맞는지, 스펠링이 올바른지 검사합니다.
+commit-msg:
+  commands:
+    lint-commit-message:
+      run: npx commitlint --edit $1
+    spell-check:
+      run: npx cspell --no-summary {1}
+```
+
+```yaml
+# 문서의 정보가 올바르게 업데이트되어 있는지 검사합니다.
+_pre-commit__format__docs:
+  piped: true
+  commands:
+    1_update-docs:
+      run: npm run update:eslint-docs
+    2_lint-docs:
+      run: npm run lint:eslint-docs
+
+# 변경된 스크립트 파일을 컨벤션에 맞게 수정합니다.
+_pre-commit__format__script:
+  parallel: true
+  commands:
+    lint:
+      glob: '*.{js}'
+      run: npx eslint {staged_files}
+    style:
+      glob: '*.{js,json,yml}'
+      run: npx prettier --write {staged_files} && git update-index --again
+```
+
+```yaml
+# 커밋이 푸시되기 전에 테스트 케이스 통과 여부를 확인합니다.
+pre-push:
+  parallel: true
+  commands:
+    test:
+      run: npm run test
+```
+````
+
+---
+transition: fade-out
+---
+
+## PR
+
+새로운 규칙을 생성하고 싶다면 PR을 생성하면 됩니다. PR의 제목은 다음 형식과 일치해야 합니다:
+
+```bash
+<type>[rule-scope]: <description>
+```
+
+> 모든 PR을 `master` 브랜치로 병합하기 때문에 history에 있는 커밋의 수는 신경 쓰지 않습니다. 편하게 커밋하세요.
+
+---
+transition: fade-out
+---
+
+### Type
+
+type은 다음 중 하나여야 합니다.
+
+<div v-click>
+
+- feat - 새로운 규칙이 추가된 경우
+- fix - 새로운 규칙을 추가하지 않는 모든 수정 사항
+- docs - 문서만 변경한 경우
+- test - 테스트만 변경한 경우
+- chore - 위를 제외한 모든 경우
+
+</div>
+
+<div v-click>
+
+### Rule Scope
+
+변경한 규칙의 이름입니다. (예: no-archidraw)
+여러 규칙을 변경한 경우 규칙 범위를 작성하는 것은 선택 사항입니다.
+
+</div>
+
+<div v-click>
+
+### Description
+
+PR 내용에 대한 명확하고 간결한 설명을 작성해주세요.
+
+예를 들어, no-archidraw라는 새로운 규칙을 추가하기 위한 PR의 제목은 다음과 같이 작성하면 됩니다:
+
+> feat(no-archidraw): 'archidraw' 문자열을 값으로 사용하는 것을 허용하지 않는 규칙 추가
+
+</div>
+
+---
+transition: slide-left
+---
+
+## Commit
+
+원활한 로그 파악을 위해 커밋 메시지에 대한 검사가 활성화되어 있습니다. 커밋 메시지에 대한 CLI를 사용하려면 아래 명령어를 입력해 커밋을 작성해주세요:
+
+```bash
+npm run cz
+```
+
+규칙에 대한 자세한 내용은 [commitlint.config](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/blob/master/commitlint.config.js)에서 확인할 수 있습니다.
 
 ---
 ---
@@ -664,83 +1007,6 @@ const final = {
 작성자: Ben
 
 </div>
-
----
-transition: fade-out
----
-
-# Components
-
-<div grid="~ cols-2 gap-4">
-<div>
-
-You can use Vue components directly inside your slides.
-
-We have provided a few built-in components like `<Tweet/>` and `<Youtube/>` that you can use directly. And adding your custom components is also super easy.
-
-```html
-<Counter :count="10" />
-```
-
-<!-- ./components/Counter.vue -->
-<Counter :count="10" m="t-4" />
-
-Check out [the guides](https://sli.dev/builtin/components.html) for more.
-
-</div>
-<div>
-
-```html
-<Tweet id="1390115482657726468" />
-```
-
-<Tweet id="1390115482657726468" scale="0.65" />
-
-</div>
-</div>
-
-<!--
-Presenter note with **bold**, *italic*, and ~~striked~~ text.
-
-Also, HTML elements are valid:
-<div class="flex w-full">
-  <span style="flex-grow: 1;">Left content</span>
-  <span>Right content</span>
-</div>
--->
-
----
-class: px-20
----
-
-# Clicks Animations
-
-You can add `v-click` to elements to add a click animation.
-
-<div v-click>
-
-This shows up when you click the slide:
-
-```html
-<div v-click>This shows up when you click the slide.</div>
-```
-
-</div>
-
-<br>
-
-<v-click>
-
-The <span v-mark.red="3"><code>v-mark</code> directive</span>
-also allows you to add
-<span v-mark.circle.orange="4">inline marks</span>
-, powered by [Rough Notation](https://roughnotation.com/):
-
-```html
-<span v-mark.underline.orange>inline markers</span>
-```
-
-</v-click>
 
 ---
 layout: center
