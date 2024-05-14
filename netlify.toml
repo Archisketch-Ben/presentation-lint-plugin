@@ -1,6 +1,6 @@
 [build]
 publish = "dist"
-command = "npm cache clean && npm update @slidev/client && npm run build"
+command = "pnpm build"
 
 [build.environment]
 NODE_VERSION = "20"
