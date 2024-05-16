@@ -442,13 +442,37 @@ module.exports = {
 }
 ```
 
-```js {16-18,3-5|all}
+```js {3-5,13-16}
 module.exports = {
   meta: {
     messages: {
       useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
     },
-    ...
+    /* ... */
+  },
+  create: function (context) {
+    return {
+      Literal(node) {
+        if (typeof node.value !== string) return;
+        if (/아키드로우/g.test(node.value)) {
+          context.report({
+            node,
+            messageId: 'useKoreanArchisketch',
+          })
+        }
+      }
+    }
+  }
+}
+```
+
+```js {16-18|all}
+module.exports = {
+  meta: {
+    messages: {
+      useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
+    },
+    /* ... */
   },
   create: function (context) {
     return {
@@ -1093,9 +1117,11 @@ plugins: [
 
 # 지속 가능한 개발
 
-이 패키지는 사내 여러 개발자들이 기여할 레포인만큼 필요한 개발 로직에 집중할 수 있게끔 여러 부분에 대해 자동화를 해두었습니다.
+이렇게 일반적인 작업을 자동화하고 필요한 규칙을 빠르게 구현할 CLI를 제공함으로써 프로젝트 구조를 잘 모르는 개발자도 JS와 AST만 이해하고 있다면 쉽게 규칙을 만들고 로직을 구현하는 데 더 집중할 수 있게 해줍니다.
 
-궁극적으로는 이 패키지를 통해 운영 부채를 상환하는 데 큰 역할을 하는 것을 목표로 합니다. 앞으로 더 많은 ESLint 규칙을 만들어 프로젝트의 유지보수성을 향상할 계획입니다. 아래는 작업 예정에 있는 규칙입니다:
+이 패키지는 궁극적으로 <span v-mark.red="1">운영 부채를 상환</span>하는 데 큰 역할을 하는 것을 목표로 합니다.
+
+앞으로 더 많은 ESLint 규칙을 만들어 프로젝트의 유지보수성을 향상할 계획입니다. 아래는 작업 예정에 있는 규칙입니다:
 
 - ban-words: [기능 제안 이슈](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/14)에서 해당 규칙에 대해 자세히 설명합니다.
 - archi-design/hierarchical-import: 각 폴더의 계층 관계를 명확히 하기 위한 규칙입니다. ex) `shared/` 모듈에서 `features/` 내 모듈을 import할 수 없도록 강제합니다.
