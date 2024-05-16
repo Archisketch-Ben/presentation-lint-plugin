@@ -374,7 +374,7 @@ const name = '아키드로우';
 ---
 ---
 
-## 예외 상황 처리
+## no-archidraw 규칙 정의하기
 
 ```js twoslash
 console.log('아키드로우');
@@ -862,7 +862,7 @@ transition: fade-out
 <type>[rule-scope]: <description>
 ```
 
-> 모든 PR을 `master` 브랜치로 병합하기 때문에 history에 있는 커밋의 수는 신경 쓰지 않습니다. 편하게 커밋하세요.
+> 모든 PR을 `master` 브랜치로 병합하기 때문에 history에 있는 커밋의 수는 신경 쓰지 않습니다. 편하게 커밋해주세요.
 
 ---
 transition: fade-out
@@ -918,16 +918,187 @@ npm run cz
 규칙에 대한 자세한 내용은 [commitlint.config](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/blob/master/commitlint.config.js)에서 확인할 수 있습니다.
 
 ---
+transition: fade-out
 ---
 
-# 지속 가능한 개발 문화 조성
+## 배포
 
-이러한 자동화된 도구의 도입은 개발자들이 더 나은 코드를 작성하고, 유지보수 비용을 줄이며, 전반적인 개발 효율은 향상시키는 데 기여할 수 있습니다. 궁극적으로는 운영 부채를 상환하는 데 큰 역할을 할 것입니다.
+`GitHub Actions`와 `semantic-release`를 사용해 배포 과정을 자동화합니다.
 
-더 나아가, 이를 바탕으로 더 많은 ESLint 규칙을 만들어 프로젝트의 유지보수성을 향상할 계획입니다. 아래는 작업 예정에 있는 규칙입니다:
+---
+transition: fade-out
+---
+
+### 프로세스
+
+배포 프로세스는 다음 단계로 구성됩니다:
+
+<div v-click>
+
+1. 코드 변경 사항이 `master` 브랜치에 푸시됩니다.
+
+</div>
+
+<div v-click>
+
+2. GitHub Actions 워크플로우(`release.yml`)가 트리거됩니다.
+
+</div>
+
+<div v-click>
+
+3. 워크플로우는 노드 버전(20, 21)을 설정하고, 의존성을 설치하며, 테스트를 실행합니다.
+
+</div>
+
+<div v-click>
+
+4. semantic-release가 새 버전을 결정하고, CHANGELOG를 업데이트하며, 태그를 생성하고, GitHub 릴리스를 생성합니다.
+
+</div>
+
+<div v-click>
+
+5. 워크플로우가 성공적으로 완료되면, 패키지가 GitHub 패키지 레지스트리에 자동으로 배포됩니다.
+
+</div>
+
+---
+transition: fade-out
+---
+
+### 워크플로우 주요 단계
+
+먼저, `release.yml` 워크플로우 파일을 살펴봅니다.
+
+````md magic-move
+```yaml
+# 1. 코드 변경 사항이 `master` 브랜치에 푸시되면, release.yml 워크플로우가 트리거됩니다.
+on:
+  push:
+    branches:
+      - master
+```
+
+```yaml{5-7|9-12,22-24|13|19}
+# 저장소의 코드를 체크아웃하고, 필요한 노드 버전을 설정하고, 의존성을 설치하고, 테스트를 실행합니다.
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 21
+          cache: npm
+      - run: npm ci
+
+      - name: Test build package on node@21 (Current)
+        run: |
+          node --version
+          npm --version
+          npm run test
+
+      # `matrix`를 사용하지 않는 이유는 그냥 복제하고 새 인스턴스를 생성하지 않는 것이 더 간단하기 때문입니다.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: test build package on node@20 (LTS)
+        ...
+```
+
+```yaml{2-3|8-13|15-20}
+# 패키지를 빌드하고, semantic-release를 사용해 새 버전을 결정하고 릴리스하고, npm publish를 사용해 패키지를 GitHub 패키지 레지스트리에 배포합니다.
+- name: Build package
+  run: npm run build
+
+- name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+  # 패키지가 변조되었는지 확인합니다.
+  run: npm audit signatures
+
+- name: Release
+  if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  run: npx semantic-release
+  continue-on-error: true
+
+- name: Publish to GitHub Package Registry
+  run: |
+    npm run build
+    npm publish
+  env:
+    # GitHub API에 액세스할 수 있도록 하는 토큰입니다.
+    NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+````
+
+---
+transition: fade-out
+---
+
+### Package.json
+
+`package.json` 파일에선 패키지의 메타데이터와 스크립트를 정의해두었습니다.
+
+```json twoslash
+"name": "@archisketch-dev-team/eslint-plugin",
+"version": "1.0.2",
+"publishConfig": {
+  "registry": "https://npm.pkg.github.com/"
+},
+"scripts": {
+  "------------------------------TEST------------------------------": "",
+  "test": "mocha tests --recursive",
+  "------------------------------BUILD------------------------------": "",
+  "build": "node tasks/build.js",
+},
+```
+
+---
+transition: slide-up
+---
+
+### Semantic Release Config
+
+`semantic-release`의 설정은 `release.config.js` 파일에서 정의할 수 있습니다.
+
+이 패키지에선 커밋 메시지 분석, 릴리스 노트 생성, CHANGELOG 업데이트, npm 및 GitHub 릴리스, git 태그 생성 등을 위한 플러그인을 설정해두었습니다.
+
+```yaml
+# 배포할 브랜치를 지정합니다.
+branches: [{ name: 'master' }],
+plugins: [
+  # 커밋 메시지를 분석하여 버전을 자동으로 결정합니다. 커밋 메시지는 `conventional commit` 규칙을 따라야 합니다. (`npm run cz` 명령어로 커밋 메시지에 대한 CLI를 사용할 수 있습니다)
+  ['@semantic-release/commit-analyzer', { preset: 'conventionalcommits' }],
+  ['@semantic-release/release-notes-generator', { preset: 'conventionalcommits' }],
+  # 자동으로 CHANGELOG를 생성하고, npm에 배포하지 않고 GitHub 릴리스를 생성합니다. `npm publish`는 release.yml 워크플로우에서 수동으로 실행합니다.
+  '@semantic-release/changelog',
+  [
+    '@semantic-release/npm',
+    {
+      npmPublish: false,
+    },
+  ],
+  ['@semantic-release/github', { successComment: false }],
+  '@semantic-release/git',
+  '@saithodev/semantic-release-backmerge',
+],
+```
+
+---
+---
+
+# 지속 가능한 개발
+
+이 패키지는 사내 여러 개발자들이 기여할 레포인만큼 필요한 개발 로직에 집중할 수 있게끔 여러 부분에 대해 자동화를 해두었습니다.
+
+궁극적으로는 이 패키지를 통해 운영 부채를 상환하는 데 큰 역할을 하는 것을 목표로 합니다. 앞으로 더 많은 ESLint 규칙을 만들어 프로젝트의 유지보수성을 향상할 계획입니다. 아래는 작업 예정에 있는 규칙입니다:
 
 - ban-words: [기능 제안 이슈](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/14)에서 해당 규칙에 대해 자세히 설명합니다.
-- archi-design/hierarchical-import: 각 폴더의 계층 관계를 명확히 하기 위한 규칙입니다. ex) 폴더 내 모듈에서 stores 폴더 내 모듈을 import할 수 없도록 강제합니다.
+- archi-design/hierarchical-import: 각 폴더의 계층 관계를 명확히 하기 위한 규칙입니다. ex) `shared/` 모듈에서 `features/` 내 모듈을 import할 수 없도록 강제합니다.
 
 좋은 아이디어가 있다면 직접 [구현](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/blob/master/CONTRIBUTING.md)하거나 기능을 [요청](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/new/choose)해주세요.
 
