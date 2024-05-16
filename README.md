@@ -1,3 +1,11 @@
-# Presentation ESLint plugin archisketch
+# Welcome to [Slidev](https://github.com/slidevjs/slidev)!
 
-https://github.com/archisketch-dev-team/eslint-plugin-archisketch 프로젝트를 설명하기 위한 발표 자료
+To start the slide show:
+
+- `npm install`
+- `npm run dev`
+- visit http://localhost:3030
+
+Edit the [slides.md](./slides.md) to see the changes.
+
+Learn more about Slidev on [documentations](https://sli.dev/).
