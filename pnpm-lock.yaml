@@ -20,9 +20,6 @@ importers:
       '@slidev/theme-seriph':
         specifier: latest
         version: 0.25.0
-      vue:
-        specifier: ^3.4.27
-        version: 3.4.27(typescript@5.4.5)
     devDependencies:
       playwright-chromium:
         specifier: ^1.44.0
