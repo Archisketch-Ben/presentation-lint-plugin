@@ -26,11 +26,11 @@ layout: fact
 
 ESLint plugin for Archisketch Dev Team
 
-이 프로젝트는 문서 관리, 프로젝트 기여 방법, 코드 스타일 및 규칙, 빌드부터 패키지 배포까지 모든 과정을 자동화하여 개발자들이 프로젝트 관리에 드는 시간과 노력을 크게 줄일 수 있도록 설계되었습니다.
+<span class="text-sm">아키스케치 내부에서 암묵적으로 사용되는 규칙을 ESLint 플러그인을 통해 정의하고 여러 프로젝트에서 표준화된 규칙을 적용</span>
 
 <div class="absolute bottom-10 left-10">
   <span class="font-700">
-    Ben / 2024.05.17
+    Ben
   </span>
 </div>
 
@@ -52,45 +52,125 @@ layoutClass: gap-16
 
 # 목차
 
-<p class="pt-4">플러그인을 만든 이유, 적용 방법, 기여 방법에 대해 설명합니다.</p>
+<p class="pt-4">패키지의 구조와 규칙을 작성하고 관리하는 방법에 대해 단계별로 설명하는 자료입니다:</p>
 
 ::right::
 
-<Toc v-click minDepth="1" maxDepth="2" class="transition-all"></Toc>
+<Toc v-click minDepth="1" maxDepth="2" class="transition-all text-[70%] max-h-[500px] overflow-y-auto"></Toc>
 
 ---
-layout: statement
 transition: slide-up
 level: 2
 ---
 
-# 왜 필요한가요?
+# ESLint 플러그인과 규칙이란 무엇인가요?
 
 <br />
 
-커져가는 프로젝트
+ESLint 플러그인은 규칙을 정의해 ESLint를 확장합니다. 대부분의 경우 여러 프로젝트에서 공유하려는 추가 규칙을 캡슐화하는 플러그인을 생성하여 ESLint를 확장합니다.
 
-일관되지 않은 코딩 스타일 및 네이밍
+<br />
 
-커뮤니티에서 만들어진 규칙만으로 부합하지 않는 조직 내 요구사항들
+<blockquote class="max-w-lg">
+<strong>💡 ESLint?</strong>
+<p>ESLint는 코드를 일관성 있게 만들고 버그를 방지하는 것을 목표로 JS 코드에서 발견되는 패턴을 식별하고 보고하는 도구입니다.</p>
+</blockquote>
 
 <img
   v-click
-  class="absolute -bottom-9 -left-7 w-80 opacity-50"
+  class="absolute bottom-20 -left-4 w-80 opacity-50"
   src="https://sli.dev/assets/arrow-bottom-left.svg"
   alt=""
 />
-<p v-after class="absolute bottom-23 left-45 opacity-30 transform -rotate-10">자세히🦭</p>
+<p v-after class="absolute bottom-50 left-45 opacity-30 transform -rotate-10">이게 왜 필요한 거죠?🦭</p>
 
-<!--
-You can have `style` tag in markdown to override the style for the current page.
-Learn more: https://sli.dev/guide/syntax#embedded-styles
--->
+---
+transition: slide-up
+---
+
+# 이게 왜 필요한가요?
+
+<div class="two-columns w-full h-full grid grid-rows-2 gap-x-10">
+  <div id="top" class="grid grid-cols-2 gap-2">
+    <div v-click>
+      <div class="col-top-left">
+        <h2>
+          <ph-trend-up-light />
+          프로젝트 확장
+        </h2>
+        <br />
+        <ul>
+          <li>
+            부족한 리소스, 다양한 요구사항에 의해 어쩔 수 없이 복잡해지는 모듈
+            종속성
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div v-click>
+      <div class="col-top-right">
+        <h2>
+          <svg
+            class="slidev-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              d="M14.4 20L13 18.6l2.6-2.6l-2.6-2.6l1.4-1.4l2.6 2.6l2.6-2.6l1.4 1.4l-2.6 2.6l2.6 2.6l-1.4 1.4l-2.6-2.6zm1.975-9l-3.55-3.55l1.4-1.4l2.125 2.125l4.25-4.25L22 5.35zM2 17v-2h9v2zm0-8V7h9v2z"
+            />
+          </svg>
+          코딩 컨벤션
+        </h2>
+        <br />
+        <ul>
+          <li>개발자마다 다른 코딩 스타일 및 네이밍</li>
+          <li>
+            개발자마다 다른 선호하는 기술<small class="block"
+              >(Tanstack-query & SWR, Moment & Dayjs) =>
+              <del>최근 마이그레이션 작업을 끝내 꽤 안정적입니다.</del></small
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div id="bottom" class="grid grid-cols-2 mt-5">
+    <div v-click>
+      <div class="col-bottom-left">
+        <h2>
+          <svg
+            class="slidev-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="28"
+            height="28"
+            viewBox="0 0 12 12"
+          >
+            <path
+              fill="currentColor"
+              d="M5 2.5a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0M6 7a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3M3.55 5H2a1 1 0 0 0-1 1v.207c0 .596.343 1.086.797 1.407c.272.193.597.336.952.42c.269-.488.736-.85 1.292-.981A2.49 2.49 0 0 1 3.55 5m4.41 2.053a2 2 0 0 1 1.291.98c.355-.083.68-.226.952-.419c.454-.32.797-.811.797-1.407V6a1 1 0 0 0-1-1H8.45a2.51 2.51 0 0 1-.49 2.053M4.5 8a1 1 0 0 0-1 1v.167c0 .587.357 1.058.808 1.358C4.763 10.83 5.363 11 6 11s1.237-.171 1.692-.475c.45-.3.808-.771.808-1.358V9a1 1 0 0 0-1-1zM9 4a1.5 1.5 0 1 0 0-3a1.5 1.5 0 0 0 0 3"
+            />
+          </svg>
+          커져가는 조직
+        </h2>
+        <br />
+        <ul>
+          <li>
+            커뮤니티에서 만들어진 규칙만으로 부합하지 않는 조직 내 요구사항들
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
 h1 {
-  background-color: #2B90B6;
-  background-image: linear-gradient(45deg, #4EC5D4 10%, #146b8c 20%);
+  background: #a8c0ff;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #3f2b96, #a8c0ff);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #3f2b96, #a8c0ff); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   background-size: 100%;
   -webkit-background-clip: text;
   -moz-background-clip: text;
@@ -99,66 +179,6 @@ h1 {
 }
 </style>
 
-<!--
-Here is another comment.
--->
-
----
-transition: fade-out
----
-
-## 커져가는 프로젝트
-
-<p class="pt-4">여러 개발자의 손을 거쳐 다양한 기술과 라이브러리가 혼재되어 있는 등 여러 문제가 있습니다:</p>
-
-<div v-click>
-
-- 비동기 상태 관리를 위해 Tanstack-query와 SWR을 혼합해서 사용
-- 날짜를 다루기 위해 Moment, Dayjs를 혼합해서 사용
-
-해결하고자 하는 문제가 비슷한 라이브러리를 중복 사용함으로써 코드 복잡함은 증가했고 일관성은 저하되었습니다.
-
-설상가상으로 낮은 버전대를 사용하고 있어 각 모듈 종속성이 꼬여 함부로 무언가를 업데이트하지 못 합니다. 예로 React17은 Tanstack-query v5와 함께 사용할 수 없습니다.
-
-</div>
-
-
-<div v-click>
-
-<del>최근 마이그레이션 작업을 끝내 꽤 안정적입니다.</del>
-
-</div>
-
----
-transition: fade-out
----
-
-## 일관된 코딩 스타일
-
-<p class="pt-4">일관된 코딩 컨벤션을 가지면 코드를 읽기 쉬워지고, 안티 패턴을 방지할 수 있습니다. 결과로 버그도 줄고, 코드를 쉽게 유지보수할 수 있게 됩니다.</p>
-
-하지만 이것을 사람이 직접 관리하는 것은 한계가 있기 때문에, ESLint와 같은 정적 분석 도구를 이용하게 됩니다. 그럼 코드 작성 단계에서 기계적으로 잡아낼 수 있습니다.
-
----
-transition: slide-left
----
-
-## 커뮤니티에서 만들어진 규칙만으로 부합하지 않는 조직 내 요구사항들
-
-ESLint에서는 생태계 내 다양한 플러그인을 통해 자주 사용되는 코딩 컨벤션을 커버할 수 있습니다. 하지만 우리 회사의 컨벤션에 맞는 규칙은 없습니다. 조직이 커지고 요구사항이 변화하게 되면서 커뮤니티에서 만들어진 규칙만으로는 조직 내 사용례에 **정확히 부합하지 않는** 경우가 생깁니다. 사내 프로젝트 내 라이브러리 사용에 대한 컨벤션을 정의하거나, 조직 내 컨벤션과 일반적인 커뮤니티에서 통용되는 컨벤션이 다소 다를 수 있습니다.
-
-<div v-click>
-
-```js twoslash
-import swr from 'swr'; // trigger error!
-
-const company = '아키드로우'; // trigger error!
-```
-
-예를 들어 비동기 데이터 관리하는 라이브러리는 `Tanstack-query`만 사용하고 싶다던가, 이전 사명인 `아키드로우`를 사용하는 케이스가 있겠습니다. 이러한 경우 코드를 사전에 감지하여 오류를 예방할 수 있다면 큰 도움이 되겠죠.
-
-</div>
-
 ---
 transition: fade-out
 layout: two-cols
@@ -166,7 +186,9 @@ layoutClass: gap-8
 level: 2
 ---
 
-보통 위 운영 부채를 해결하기 위해, 해결하고자 하는 문제가 비슷한 라이브러리를 하나로 통일하기로 약속합니다.
+## 어떻게 위 문제를 해결하나요?
+
+운영 부채를 해결하기 위해 다양한 규칙을 회의를 통해 결정했다고 가정해보겠습니다.
 
 <div v-click>
 
@@ -176,9 +198,15 @@ level: 2
 
 <div v-click>
 
-이전 사명인 '아키드로우'는 사용하지 않도록 하며 기능을 담당하는 로직은 특정 폴더에 넣는다 등 정보들은 보통 리드미 또는 노션에 작성됩니다.
+**❝이전 사명인 '아키드로우'는 사용하지 않도록 하며, 기능을 담당하는 로직은 특정 폴더에 넣는다 등 정보들은 보통 리드미 또는 노션에 작성됩니다.❞**
 
-</div v-click>
+</div>
+
+<div v-click>
+
+그럼 이렇게 정한 규칙들은 대부분 노션이나 리드미를 통해 작성되고 관리됩니다.
+
+</div>
 
 
 <div v-click>
@@ -188,7 +216,7 @@ level: 2
 비동기 데이터 관리는 Tanstack-query를 사용합니다.
 
 ### Structure
-음식 추가를 담당하는 모듈은 `features/order/` 폴더에 작성하면 됩니다.
+음식 주문을 담당하는 모듈은 `features/order` 폴더에 작성하면 됩니다.
 
 ### Business
 이전 사명을 값으로 사용해선 안 됩니다. ex) '아키드로우', 'archidraw'
@@ -202,29 +230,25 @@ level: 2
 
 <div v-click>
 
-리드미 파일에 주의사항을 기재하거나 직접 대화를 통해 전달하는 방법은 새로운 개발자가 쉽게 놓칠 수 있고, 지속적인 관리가 어렵다는 단점이 있습니다.
+리드미 파일에 주의사항을 기재하거나 직접 대화를 통해 전달하는 방법은 새로운 개발자가 쉽게 <span v-mark.red="6">놓칠 수 있고, 지속적인 관리가 어렵다</span>는 단점이 있습니다.
 
 이러한 변화들을 프로젝트에 새로 합류하는 개발자들에게 전달하는 더 좋은 방법은 없을까요?
 
 </div>
 
-<div v-click>
-
-<p class="py-16 text-xl font-extrabold">코드 작성 단계에서부터 이러한 요구사항을 잘 아는 누군가가 옆에서 가이드하는 건 어떨까요?</p>
-
-</div>
-
 ---
-transition: slide-left
+layout: statement
 ---
 
-## ESLint Plugin
+<p class="text-xl">규칙을 모두 몰라도 코드 작성 단계에서 규칙을 잘 아는 누군가가 옆에서 가이드하는 건 어떨까요?</p>
+
+---
+transition: fade-out
+---
 
 이 패키지가 이를 도와주는 가이드 역할을 합니다.
 
-먼저, 왜 간단한 정규식을 놔두고 ESLint 플러그인을 구현했는지 궁금할 수도 있습니다
-
-제가 `Editor` 프로젝트를 개발하던 시절에, 코드 리뷰에서 디버깅 코드 포함 여부같은 사소한 리뷰를 방지하고자 로그가 함부로 찍히지 않도록 `console.log` 사용을 제한하는 규칙을 만들었습니다:
+먼저, 왜 간단한 정규식을 놔두고 ESLint 플러그인을 구현했는지 궁금할 수도 있습니다. `Editor` 프로젝트를 개발하던 때에, 코드 리뷰에서 디버깅 코드 포함 여부같은 사소한 리뷰를 방지하고자 로그가 함부로 찍히지 않도록 `console.log` 사용을 제한하는 규칙을 만들었습니다:
 
 ```shell
   no_console () {
@@ -244,12 +268,12 @@ transition: slide-left
 
 <div v-click>
 
-하지만 이 방법은 의도한만큼 **정확하게 동작하지 않습니다.** 예를 들어서,문자열 또는 주석 내부에 있는 `console.log`를 구분하지 못합니다. 더 정교한 정규식을 구현해 대응할 수 있지만 관리하기 매우 힘들어지니, AST를 사용하는 게 더 좋습니다.
+하지만 이러한 방법은 대부분 의도한만큼 **정확하게 동작하지 않습니다.** 예를 들어서,문자열 또는 주석 내부에 있는 `console.log`를 구분하지 못할 수도 있습니다. 더 정교한 정규식을 구현해 대응할 수 있지만 복잡해지니, AST를 사용하는 게 더 좋습니다.
 
 </div>
 
 ---
-transition: fade-out
+transition: slide-left
 layout: two-cols
 layoutClass: gap-8
 ---
@@ -276,7 +300,7 @@ const alertMessage = "console.log()는 개발 환경에서만 사용해주세요
 <h6 class="opacity-40">PROS</h6>
 
 - 복잡한 요구사항에 적합하지 않습니다
-- 유지보수가 쉽지 않습니다
+- 복잡해진 정규식은 유지보수가 쉽지 않습니다
 
 </div>
 
@@ -298,11 +322,17 @@ const alertMessage = "console.log()는 개발 환경에서만 사용해주세요
 <h6 class="opacity-40 pt-4">PROS</h6>
 
 - 관리가 용이합니다.
-- 복잡한 비즈니스 요구사항에 대해 구현 가능합니다
+- 복잡한 비즈니스 요구사항에 대해 구현이 가능합니다
 
 <h6 class="opacity-40">PROS</h6>
 
-- 유지보수를 위해선 AST에 대한 지식이 필요합니다 => "기여하기" 섹션에서 자세히 설명합니다.
+- 유지보수를 위해선 AST에 대한 지식이 필요합니다 => 프로젝트의 "CONTRIBUTING.md"에서 이를 위한 리소스를 제공합니다.
+
+</div>
+
+<div v-click>
+
+암묵적으로 생성된 규칙들을 잘 관리하고자 ESLint-Plugin을 만들게 되었습니다.
 
 </div>
 
@@ -311,313 +341,88 @@ layout: statement
 transition: slide-up
 ---
 
-# 라이브러리 기여 가이드
-
-라이브러리를 활용하는 방법에 대해 알아보겠습니다.
+# 코드 자세히 살펴보기
 
 ---
 transition: fade-out
 ---
 
-## 규칙을 어떻게 직접 정의할 수 있을까요?
+## 폴더 구조
 
-ESLint의 파서인 espree를 사용해 소스 코드를 AST로 변환하고, 정의한 규칙을 직접 플러그인을 통해 정의하고 실행할 수 있습니다.
+`docs/rules`에 <span v-mark.red="1">규칙에 대한 문서</span>가 작성됩니다.
 
-Espree AST만 읽을 수 있다면 ESLint 규칙을 쉽게 만들 수 있습니다. `AST`에 익숙하지 않은 경우 [기여 가이드 문서](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/blob/master/CONTRIBUTING.md)에서 도움이 될 만한 몇 가지 리소스를 제공합니다. 🍺
+`lib/rules/`에 <span v-mark.orange="2">규칙을 정의</span> 하는 스크립트가 정의되어 있습니다. `configs` 폴더에는 이 플러그인을 사용할 때 규칙에 대한 추천 구성을 설정할 수 있습니다.
 
-이전 사명인 소스 코드에서 '아키드로우'를 값으로 사용하면 '아키스케치'로 바꿔야 한다고 알려주는 no-archidraw와 같은 규칙을 어떻게 정의할 수 있는지 알아보도록 하겠습니다.
+`tests/lib/rules`에 <span v-mark.green="3">규칙에 대한 테스트 케이스</span>가 정의되어 있습니다.
 
----
-transition: fade-out
----
-
-## no-archidraw 규칙 정의하기
-
-먼저 코드 내 문자열이 Espree AST에서 어떻게 표현되는지 파악해야 합니다.
-
-1. AST Explorer에 접속합니다.
-2. 코드 입력 영역에 `const name = '아키드로우';`를 입력합니다.
-3. 파서 설정에서 `Espree`를 선택합니다.
-
----
----
-
-```js twoslash
-const name = '아키드로우';
-```
-
-입력한 코드는 다음과 같은 AST 구조로 변환됩니다:
-
-```json {all|11-13} twoslash
-{
-  "type": "VariableDeclaration",
-  "declarations": [
-    {
-      "type": "VariableDeclarator",
-      "id": {
-        "type": "Identifier",
-        "name": "name"
-      },
-      "init": {
-        "type": "Literal",
-        "value": "아키드로우",
-        "raw": "'아키드로우'"
-      }
-    }
-  ],
-  "kind": "const"
-}
-```
-
-이해하기 쉽게 일부 정보는 생략했습니다. `Literal` 타입의 노드에서 `value`를 읽으면 문자열 내용을 알 수 있습니다.
-
----
----
-
-## no-archidraw 규칙 정의하기
-
-```js twoslash
-console.log('아키드로우');
-console.log('archidraw');
-import { A } from 'archidraw-dev-team';
-```
-
-사내에서 어쩔 수 없이 `archidraw-*` 형식의 이름의 패키지를 사용하는 경우나 콘솔이나 변수명으로 사용할 때는 어떻게 해야 하나? 궁금할 수도 있습니다.
-
-<div v-click>
-
-위 import 구문은 AST로 변환했을 때 `ImportDeclaration` 타입의 노드를 가집니다. 반면 const 구문은 `VariableDeclaration` 타입의 노드를 가지죠. 원한다면 확실하게 구분할 수 있는 장치가 있다는 것입니다. 이게 AST가 빛을 발하는 부분입니다.
-
-</div>
-
----
----
-
-<p class="text-sm">이제 이를 기반으로 아래와 같이 ESLint 규칙을 정의할 수 있습니다. 아래 코드는 <span v-mark.red="1">Literal을 만났을 때</span>, 그 Literal의 값이 <span v-mark.circle.orange="2">'아키드로우'를 포함</span>하는 문자열이면 에러를 <span v-mark.green="3">리포트</span>하고 올바른 문자열로 <span v-mark.circle.blue="4">수정</span>하는 코드입니다. 실제 함수는 이것보다 조금 더 복잡하지만 핵심 로직은 이게 전부입니다.</p>
-
-````md magic-move
-```js
-module.exports = {
-  meta: {
-    /* ... */
-  },
-  create: function (context) {
-    return {
-
-    }
-  }
-}
-```
-
-```js {7-9}
-module.exports = {
-  meta: {
-    /* ... */
-  },
-  create: function (context) {
-    return {
-      Literal(node) {
-
-      }
-    }
-  }
-}
-```
-
-```js {9-11}
-module.exports = {
-  meta: {
-    /* ... */
-  },
-  create: function (context) {
-    return {
-      Literal(node) {
-        if (typeof node.value !== string) return;
-        if (/아키드로우/g.test(node.value)) {
-
-        }
-      }
-    }
-  }
-}
-```
-
-```js {3-5,13-16}
-module.exports = {
-  meta: {
-    messages: {
-      useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
-    },
-    /* ... */
-  },
-  create: function (context) {
-    return {
-      Literal(node) {
-        if (typeof node.value !== string) return;
-        if (/아키드로우/g.test(node.value)) {
-          context.report({
-            node,
-            messageId: 'useKoreanArchisketch',
-          })
-        }
-      }
-    }
-  }
-}
-```
-
-```js {16-18|all}
-module.exports = {
-  meta: {
-    messages: {
-      useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
-    },
-    /* ... */
-  },
-  create: function (context) {
-    return {
-      Literal(node) {
-        if (typeof node.value !== string) return;
-        if (/아키드로우/g.test(node.value)) {
-          context.report({
-            node,
-            messageId: 'useKoreanArchisketch',
-            fix: function (fixer) {
-              return fixer.replaceText(node, node.raw.replace(patternKorean, '아키스케치'));
-            },
-          })
-        }
-      }
-    }
-  }
-}
-```
-````
-
----
----
-
-## 테스트 작성
-
-이 프로젝트에선 테스트 케이스를 작성할 시간이 충분하다면 작성할 것을 권장합니다. 메인으로 맡아서 하는 프로젝트가 아니므로 다른 PR이 작업을 안전하게 계속할 수 있는 좋은 밑거름이 될 수 있도록 해주세요. 🙏
-
-테스트 케이스를 작성하기 편하도록 테스트 케이스를 생성하고 모듈 참조 테스트 등을 위한 유틸 함수를 제공하고 있습니다. 사용 방법은 아래와 같습니다:
-
-````md magic-move
-```js {*|7-13|*}
-const path = require('node:path');
-
-const testFilePath = (relativePath) => {
-  return path.join(process.cwd(), './tests/files', relativePath);
-};
-
-const test = (t) => {
-  return {
-    ...t,
-    filename: testFilePath(t.filename ?? 'foo.mjs'),
-    parserOptions: { ecmaVersion: 2020, sourceType: 'module', ...t.parserOptions },
-  };
-};
-
-module.exports = {
-  testFilePath,
-  test,
-};
-```
-
-```js
-const { test } = require('./utils');
-```
-
-```js
-const { test } = require('./utils');
-const rule = require('../../../lib/rules/no-archidraw'),
-  RuleTester = require('eslint').RuleTester;
-
-const ruleTester = new RuleTester();
-
-ruleTester.run('no-archidraw', rule, {
-});
-```
-
-```js
-ruleTester.run('no-archidraw', rule, {
-  valid: [].concat(
-    test({
-      code: `import { A } from 'archidraw-dev-team';`,
-    }),
-    test({
-      code: `console.log('아키드로우');`,
-    }),
-  ),
-});
-```
-
-```js
-ruleTester.run('no-archidraw', rule, {
-  valid: [].concat(
-    test({
-      code: `import { A } from 'archidraw-dev-team';`,
-    }),
-    test({
-      code: `console.log('아키드로우');`,
-    }),
-  ),
-  invalid: [].concat(
-    test({
-      code: `const name = '아키드로우';`,
-      errors: [{ messageId: 'useKoreanArchisketch' }],
-      output: `const name = '아키스케치';`,
-    }),
-  ),
-});
-```
-````
-
----
----
-
-이렇게 작성된 규칙을 ESLint 설정에 추가하면 개발자들이 개발 중 규칙에 맞지 않는 코드를 작성했을 때 알려주고 자동 수정 제안을 할 수 있습니다.
-
-![alt text](/trigger-error.png)
-
-![alt text](/fixer.png)
-
----
-transition: slide-left
----
-
-## 이슈 관리
-
-새로운 규칙을 제안하거나 버그가 있다면 [이슈 생성](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/new/choose) 페이지에서 제보할 수 있습니다.
-
-![alt text](/issues.png)
-
----
-transition: fade-out
----
-
-## 시작하는 방법
-
-패키지 매니저는 `npm`을 사용합니다.
-
-작업을 시작하기 전에 시작점이 되는 모듈(build/index.js)을 생성해야 합니다:
-
-```bash
-npm run build
+```md {all|1-3|4-10|11-14}
+├── docs
+│  └── rules
+│    └── no-archidraw.md
+├── lib
+│  ├── configs
+│  │  └── recommended.js
+│  ├── docsUrl.js
+│  ├── index.js
+│  └── rules
+│    └── no-archidraw.js
+└── tests
+  ├── lib
+  │  └── rules
+  │    └── no-archidraw.test.js
 ```
 
 ---
 transition: fade-out
 ---
 
-### 규칙 작성
+## 프로젝트 초기화
 
-이 프로젝트는 새로운 규칙 작성을 위한 <span v-mark.red="1">자동 생성 CLI를 제공</span>합니다. 아래 명령을 실행해주세요:
+<br />
+
+사내 프로젝트와 마찬가지로 패키지 매니저는 `npm`을 사용합니다.
+
+<v-clicks>
+
+- `npm install`을 실행해 종속성을 설치합니다.
+- `npm run build`를 실행해 플러그인의 진입점이 되는 파일<small>(build/index.js)</small>을 생성합니다.
+- 작업을 시작합니다.
+
+</v-clicks>
+
+---
+transition: fade-out
+---
+
+## 작업을 위한 CLI 제공
+
+<br />
+
+편의를 위해 작업에 필요한 파일을 자동으로 생성하는 CLI를 제공합니다.
+
+또한 문서를 업데이트하는 CLI도 제공합니다.
+
+---
+transition: fade-out
+---
+
+### 파일 생성
+
+새로운 규칙을 추가하려면 다음 명령어를 실행하세요:
 
 ```bash
 npm run generate-rule
 ```
+
+---
+transition: fade-out
+---
+
+### 파일 생성
+
+`no-archidraw` 규칙을 구현하는 것을 예시로 들어보겠습니다.
+
+명령어를 실행하고 질문에 대한 답을 입력해주세요:
 
 ````md magic-move
 ```bash
@@ -723,28 +528,192 @@ create /Users/jaemin/develop/archisketch/eslint-plugin-archisketch/docs/rules/no
 ```
 ````
 
+<div v-click="9">
+
+이렇게 하면 새 규칙에 대한 문서, 테스트 및 규칙의 동작을 정의하는 코드가 생성됩니다. 지금은 문서 섹션을 건너뛰고 규칙 작성과 테스트 파일에 집중해보겠습니다.
+
+</div>
+
 ---
 transition: fade-out
 ---
 
-### 생성된 파일 업데이트
+### 규칙 작성
 
-이제 다양한 규칙 메타데이터를 다루는 문서를 생성했고 업데이트되었습니다:
+ESLint의 파서인 espree를 사용해 소스 코드를 AST로 변환하고, 정의한 규칙을 직접 플러그인을 통해 정의하고 실행할 수 있습니다.
+
+Espree AST만 읽을 수 있다면 ESLint 규칙을 쉽게 만들 수 있습니다. `AST`에 익숙하지 않은 경우 [기여 가이드 문서](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/blob/master/CONTRIBUTING.md)에서 도움이 될 만한 몇 가지 리소스를 제공합니다. 🍺
+
+이전 사명인 소스 코드에서 '아키드로우'를 값으로 사용하면 '아키스케치'로 바꿔야 한다고 알려주는 no-archidraw와 같은 규칙을 어떻게 정의할 수 있는지 알아보도록 하겠습니다.
+
+먼저 코드 내 문자열이 Espree AST에서 어떻게 표현되는지 파악해야 합니다.
+
+1. [AST Explorer](https://astexplorer.net/#/gist/eb5587c6479ffa3b23a95924bedc059e/a5d891aa1d41b3f967eaa60d92351bf1e1b02379)에 접속합니다.
+2. 코드 입력 영역에 `const name = '아키드로우';`를 입력합니다.
+3. 파서 설정에서 `Espree`를 선택합니다.
+
+---
+---
+
+### 규칙 작성
+
+`const name = '아키드로우';` 코드는 다음과 같은 AST 구조로 변환됩니다:
+
+```json {all|11-13} twoslash
+{
+  "type": "VariableDeclaration",
+  "declarations": [
+    {
+      "type": "VariableDeclarator",
+      "id": {
+        "type": "Identifier",
+        "name": "name"
+      },
+      "init": {
+        "type": "Literal",
+        "value": "아키드로우",
+        "raw": "'아키드로우'"
+      }
+    }
+  ],
+  "kind": "const"
+}
+```
+
+이해하기 쉽게 일부 정보는 생략했습니다. `Literal` 타입의 노드에서 `value`를 읽으면 문자열 내용을 알 수 있습니다.
+
+---
+transition: fade-out
+---
+
+```js twoslash
+console.log('아키드로우');
+console.log('archidraw');
+import { A } from 'archidraw-dev-team';
+```
+
+위 코드처럼 사내에서 어쩔 수 없이 `archidraw-*` 형식의 이름의 패키지를 사용하는 경우나 콘솔이나 변수명으로 사용할 때는 어떻게 해야 하는지도 감이 옵니다.
 
 <div v-click>
 
-- README.md 규칙 테이블
-- README.md 구성 테이블
-- 규칙 문서 제목 및 안내 문구
-- 규칙 문서 옵션 목록
-- 규칙 정의 파일
-- 규칙 테스트 파일
+import 구문은 AST로 변환했을 때 `ImportDeclaration` 타입의 노드를 가집니다. 반면 const 구문은 `VariableDeclaration` 타입의 노드를 가집니다. 코드에서의 구조를 분석할 수 있으므로 원하는 대로 범위를 좁힐 수 있습니다. 이게 정규식 대신 AST를 사용하는 이유입니다.
 
 </div>
 
-<div v-click>
+---
+transition: slide-up
+---
 
-생성된 파일에서 필요한 파일을 수정하고 필요 없는 파일은 제거해주세요. 그리고 추천 구성에 들어가야 하는 규칙이라면 `lib/configs/recommended.js` 파일의 `rules` 객체에 규칙을 추가해주세요.
+### 규칙 작성
+
+<p class="text-sm">AST를 이해했으니 `lib/rules/no-archidraw.js`에서 ESLint 규칙의 동작을 정의할 수 있습니다. 아래 코드는 <span v-mark.red="1">Literal을 만났을 때</span>, 그 Literal의 값이 <br/><span v-mark.circle.orange="2">'아키드로우'를 포함</span>하는 문자열이면 에러를 <span v-mark.green="3">리포트</span>하고 올바른 문자열로 <span v-mark.circle.blue="4">수정</span>하는 코드입니다. 실제 함수는 이것보다 조금 더 복잡하지만 핵심 로직은 이게 전부입니다.</p>
+
+````md magic-move
+```js
+module.exports = {
+  meta: {
+    /* ... */
+  },
+  create: function (context) {
+    return {
+
+    }
+  }
+}
+```
+
+```js {7-9}
+module.exports = {
+  meta: {
+    /* ... */
+  },
+  create: function (context) {
+    return {
+      Literal(node) {
+
+      }
+    }
+  }
+}
+```
+
+```js {9-11}
+module.exports = {
+  meta: {
+    /* ... */
+  },
+  create: function (context) {
+    return {
+      Literal(node) {
+        if (typeof node.value !== string) return;
+        if (/아키드로우/g.test(node.value)) {
+
+        }
+      }
+    }
+  }
+}
+```
+
+```js {3-5,13-16}
+module.exports = {
+  meta: {
+    messages: {
+      useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
+    },
+    /* ... */
+  },
+  create: function (context) {
+    return {
+      Literal(node) {
+        if (typeof node.value !== string) return;
+        if (/아키드로우/g.test(node.value)) {
+          context.report({
+            node,
+            messageId: 'useKoreanArchisketch',
+          })
+        }
+      }
+    }
+  }
+}
+```
+
+```js {16-18|all}
+module.exports = {
+  meta: {
+    messages: {
+      useKoreanArchisketch: "'아키드로우' 대신 '아키스케치'를 사용해야 합니다.",
+    },
+    /* ... */
+  },
+  create: function (context) {
+    return {
+      Literal(node) {
+        if (typeof node.value !== string) return;
+        if (/아키드로우/g.test(node.value)) {
+          context.report({
+            node,
+            messageId: 'useKoreanArchisketch',
+            fix: function (fixer) {
+              return fixer.replaceText(node, node.raw.replace(patternKorean, '아키스케치'));
+            },
+          })
+        }
+      }
+    }
+  }
+}
+```
+````
+
+---
+transition: fade-out
+---
+
+### 규칙 작성
+
+추천 구성에 들어가야 하는 규칙이라면 `lib/configs/recommended.js` 파일의 `rules` 객체에 규칙을 추가해주세요.
 
 ```js twoslash
 /** @type {import('eslint').Linter.Config}*/
@@ -757,15 +726,188 @@ module.exports = {
 };
 ```
 
+---
+transition: slide-up
+---
+
+### 테스트 작성
+
+이 프로젝트에선 테스트 케이스를 작성할 시간이 충분하다면 작성할 것을 권장합니다. 누군가가 맡아서 하는 메인 프로젝트가 아니므로 다른 PR이 작업을 안전하게 계속할 수 있는 좋은 밑거름이 될 수 있도록 해주세요. 🙏
+
+테스트 케이스를 작성하기 편하도록 테스트 케이스를 생성하고 모듈 참조 테스트 등을 위한 유틸 함수를 제공하고 있습니다. 테스트 케이스를 작성해보겠습니다:
+
+````md magic-move
+```js {*|7-13}
+const path = require('node:path');
+
+const testFilePath = (relativePath) => {
+  return path.join(process.cwd(), './tests/files', relativePath);
+};
+
+const test = (t) => {
+  return {
+    ...t,
+    filename: testFilePath(t.filename ?? 'foo.mjs'),
+    parserOptions: { ecmaVersion: 2020, sourceType: 'module', ...t.parserOptions },
+  };
+};
+
+module.exports = {
+  testFilePath,
+  test,
+};
+```
+
+```js
+const { test } = require('./utils');
+```
+
+```js
+const { test } = require('./utils');
+const rule = require('../../../lib/rules/no-archidraw'),
+  RuleTester = require('eslint').RuleTester;
+
+const ruleTester = new RuleTester();
+
+ruleTester.run('no-archidraw', rule, {
+});
+```
+
+```js
+ruleTester.run('no-archidraw', rule, {
+  valid: [].concat(
+    test({
+      code: `import { A } from 'archidraw-dev-team';`,
+    }),
+    test({
+      code: `console.log('아키드로우');`,
+    }),
+  ),
+});
+```
+
+```js
+ruleTester.run('no-archidraw', rule, {
+  valid: [].concat(
+    test({
+      code: `import { A } from 'archidraw-dev-team';`,
+    }),
+    test({
+      code: `console.log('아키드로우');`,
+    }),
+  ),
+  invalid: [].concat(
+    test({
+      code: `const name = '아키드로우';`,
+      errors: [{ messageId: 'useKoreanArchisketch' }],
+      output: `const name = '아키스케치';`,
+    }),
+  ),
+});
+```
+````
+
+---
+transition: fade-out
+---
+
+## 문서 업데이트
+
+이렇게 규칙을 하나씩 추가하다보면 10개, 100개까지 정말 많은 규칙들이 생성될 수 있습니다. <br/>그럼 규칙에 대한 <span v-mark.red="1">문서를 최신 상태로 유지</span>하기 힘들 수 있습니다.
+
+이를 위해 문서를 업데이트하는 과정을 간소화하는 CLI를 제공합니다. 규칙을 추가하거나 규칙 메타데이터를 업데이트할 때마다 아래 명령어를 실행해주세요:
+
+```bash
+npm run update:eslint-docs
+```
+
+---
+transition: fade-out
+---
+
+### README.md 업데이트
+
+`no-archidraw` 규칙을 만들었으니 `README.md` 문서의 [기존 규칙] 목록에 추가해야 합니다. CLI를 사용하면 새 규칙은 `## 규칙들` 섹션에 자동으로 추가됩니다.
+
+```md twoslash
+<!-- README.md -->
+## 규칙들
+<!-- begin auto-generated rules list -->
+| Name                                       | Description                                                | 💼 | ⚠️ | 🔧 |
+| :----------------------------------------- | :--------------------------------------------------------- | :- | :- | :- |
+| [no-archidraw](docs/rules/no-archidraw.md) | 이전 사명 사용을 금지합니다                                | ✅  |    | 🔧 |
+<!-- end auto-generated rules list -->
+```
+
+<div v-click>
+
+뿐만 아니라, `## 구성` 섹션도 업데이트됩니다.
+
+```md twoslash
+<!-- begin auto-generated configs list -->
+
+|    | Name          |
+| :- | :------------ |
+| ✅  | `recommended` |
+
+<!-- end auto-generated configs list -->
+```
+
 </div>
 
 ---
 transition: fade-out
 ---
 
-### 문서 업데이트
+### 규칙 문서 업데이트
 
-규칙을 개선하려면 lib/rules의 규칙 파일 이름과 일치하는 docs/rules의 문서의 규칙 설명을 업데이트해주세요. 그 뒤에 `npm run update:eslint-docs`를 실행하면 README.md의 규칙 테이블, README.md의 구성 테이블 및 해당 규칙 문서 헤더가 업데이트됩니다. 아래는 기존 `no-archidraw` 규칙을 `no-archisketch` 규칙으로 변경하는 예시입니다:
+규칙에 대한 문서에서는 <span v-mark.circle.red="1">규칙 이름</span>을 포함한 <span v-mark.circle.orange="2">기본 정보</span>들이 각 규칙 문서의 상단에 자동으로 추가됩니다. 이 정보들은 규칙을 생성하는 CLI를 통해 입력한 정보를 바탕으로 생성됩니다.
+
+```md twoslash
+# 이전 사명 사용을 금지합니다 (`@archisketch-dev-team/no-archidraw`)
+
+💼 이 규칙은 ✅ 'recommended' 구성에서 활성화됩니다.
+
+🔧 이 규칙은 [`--fix` CLI 옵션](https://eslint.org/docs/latest/user-guide/command-line-interface#--fix)으로 자동으로 수정될 수 있습니다.
+
+<!-- end auto-generated rule header -->
+```
+
+---
+transition: fade-out
+---
+
+### 규칙 문서 검사
+
+각 규칙에 대한 문서에는 해당 규칙에 대한 적절한 설명이 포함되어야 합니다. <br/>이를 필수로 구성되어야 할 섹션이 작성되어 있는지 여부를 검사합니다. 이 검사를 통과하지 못하면 커밋이 되지 않습니다.
+
+```bash
+npm run lint:eslint-docs
+```
+
+<div v-click>
+
+필수로 구성되어야 하는 섹션은 다음과 같습니다:
+
+- Rule Details
+  - 이 규칙에 대한 <strong>잘못된</strong> 코드의 예
+  - 이 규칙에 대한 <strong>올바른</strong> 코드의 예
+- When Not To Use It
+  - 이 규칙을 사용하지 않아도 되는 상황의 예
+
+</div>
+
+<div v-click>
+
+규칙을 생성해주는 CLI를 이용해 생성된 문서에는 기본적인 정보를 포함해 필수 섹션이 자동으로 포함되어 있으므로 너무 걱정할 필요는 없습니다.
+
+</div>
+
+---
+transition: fade-out
+---
+
+규칙의 <strong>이름</strong>을 수정하려면 lib/rules의 규칙 파일 이름과 일치하는 docs/rules의 문서의 규칙 설명을 업데이트해주세요. 그 뒤에 `npm run update:eslint-docs`를 실행하면 README.md의 규칙 테이블, README.md의 구성 테이블 및 해당 규칙 문서 헤더가 업데이트됩니다. 아래는 기존 `no-archidraw` 규칙을 `no-archisketch` 규칙으로 변경하는 예시입니다:
 
 ````md magic-move
 ```diff
@@ -807,18 +949,121 @@ npm run update:eslint-docs
 ```
 ````
 
-버그 수정을 할 땐 문서가 변경될 필요는 없지만 기존 문서를 훑어보고 <span v-mark.red="6">제거해야 할 관련 경고가 있는지 확인</span>하는 것이 좋습니다.
+<div v-click>
+
+버그 수정을 할 땐 반드시 문서가 변경될 필요는 없지만, 기존 문서를 훑어보고 <span v-mark.red="6">수정해야 할 내용이 있는지 확인</span>하는 것이 좋습니다.
+
+다양한 프로젝트에서 사용되므로 웬만하면 규칙의 이름을 변경하지 마세요. 이 부분에 대해서 CLI를 제공하지 않는 이유이기도 합니다.
+
+</div>
 
 ---
 transition: fade-out
 ---
 
-### 코드 퀄리티 유지
+# 플러그인 적용하기
 
-코드 퀄리티를 유지하기 위해 딱히 해야 할 작업은 없습니다. 기본적으로 git hook을 이용해 품질을 검사하기 때문입니다. 하지만 작업 중간중간 확인해보고 싶다면 아래 명령어를 실행하면 됩니다:
+### 설치
+
+[ESLint](https://eslint.org/)를 먼저 설치해주세요:
+
+```sh
+npm i eslint --save-dev
+```
+
+그 다음, `.eslintrc.js` 파일을 생성해주세요:
+
+```javascript
+module.exports = {
+  root: true,
+};
+```
+
+`@archisketch-dev-team/eslint-plugin`를 설치해주세요:
+
+```sh
+npm install @archisketch-dev-team/eslint-plugin --save-dev
+```
+
+---
+transition: fade-out
+---
+
+### 설치 및 구성
+
+이 플러그인에는 **추천 설정이 함께 제공**됩니다. `.eslintrc` 파일에서 `extends` 속성에 `plugin:@archisketch-dev-team/recommended`를 추가해주세요:
+
+```json
+{
+  "extends": ["plugin:@archisketch-dev-team/recommended"]
+}
+```
+
+> 제공되는 프리셋을 사용하지 않는 경우 개별 규칙을 설정하고 일부 구성을 추가해야 합니다. 위에서 설명한 `lib/configs/recommended.js` 파일의 `rules` 객체에 추가한 규칙들이 설정됩니다.
+
+### 규칙 재설정
+
+특정 규칙을 재설정하고 싶다면, `rules` 섹션에서 해당 규칙을 오버라이드할 수 있습니다. 예를 들어, `no-archidraw` 규칙을 비활성화하고 `no-moment` 규칙을 오류로 표시하려면 다음과 같이 설정하세요.
+
+```json
+{
+  "extends": ["plugin:@archisketch-dev-team/recommended"],
+  "rules": {
+    "@archisketch-dev-team/no-archidraw": "off",
+    "@archisketch-dev-team/no-moment": "error"
+  }
+}
+```
+
+---
+transition: slide-left
+---
+
+### 규칙 위반 코드 감지
+
+이렇게 플러그인을 ESLint 구성에 추가하면 개발자들이 개발 중 규칙에 맞지 않는 코드를 작성했을 때 알려주고, 자동 수정 제안을 할 수 있습니다.
+
+<img src="/trigger-error.png" class="max-w-[80%]">
+
+<img src="/fixer.png" class="max-w-[80%]">
+
+<div v-click>
+
+Auto Fix를 실행할 경우, '(주)아키드로우' 문자열은 '(주)아키스케치'로 수정됩니다.
+
+</div>
+
+---
+layout: statement
+transition: slide-up
+---
+
+# 프로젝트 관리
+
+---
+transition: fade-out
+---
+
+## 이슈 관리
+
+새로운 규칙을 제안하고 싶거나 규칙에 버그가 있다면 [이슈 생성](https://github.com/archisketch-dev-team/eslint-plugin-archisketch/issues/new/choose) 페이지에서 제보할 수 있습니다.
+
+![alt text](/issues.png)
+
+해당하는 이슈 템플릿을 선택해 질문에 적절한 답을 작성해주면 빠르게 파악하는 데 도움이 됩니다.
+
+---
+transition: fade-out
+---
+
+## 코드 퀄리티 유지
+
+코드 퀄리티를 유지하기 위해 딱히 해야 할 작업은 없습니다. 기본적으로 git hook을 이용해 품질을 검사하기 때문입니다.
+
+하지만 작업 도중 확인해보고 싶다면 아래 명령어를 실행하면 됩니다:
 
 ```bash
-npm run all-in=one
+npm run all-in-one
 ```
 
 위 명령어는 다음 방법으로 전체적인 코드의 품질을 검사합니다.
@@ -829,9 +1074,13 @@ transition: slide-up
 
 ### 코드 퀄리티 유지
 
-크게 <span v-mark.red="0">커밋을 완료하기 전</span>에 <span v-mark.circle.red="0">커밋 메시지</span>와 <span v-mark.circle.red="1">변경된 문서, 스크립트</span>에 대한 검사를, 커밋을 <span v-mark.blue="2">푸시하기 전</span>에 <span v-mark.circle.blue="2">테스트 케이스</span>가 올바른지 검사합니다.
+크게 <span v-mark.red="1">커밋을 완료하기 전</span>에 <span v-mark.circle.red="1">커밋 메시지</span>와 <span v-mark.circle.red="2">변경된 문서, 스크립트</span>에 대한 검사를, 커밋을 <span v-mark.blue="3">푸시하기 전</span>에 <span v-mark.circle.blue="3">테스트 케이스</span> 통과 여부를 검사합니다.
 
 ````md magic-move
+```yaml
+commit-msg:
+```
+
 ```yaml
 # 커밋 메시지가 제안된 컨벤션에 맞는지, 스펠링이 올바른지 검사합니다.
 commit-msg:
@@ -880,13 +1129,15 @@ transition: fade-out
 
 ## PR
 
+### 기여하기
+
 새로운 규칙을 생성하고 싶다면 PR을 생성하면 됩니다. PR의 제목은 다음 형식과 일치해야 합니다:
 
 ```bash
 <type>[rule-scope]: <description>
 ```
 
-> 모든 PR을 `master` 브랜치로 병합하기 때문에 history에 있는 커밋의 수는 신경 쓰지 않습니다. 편하게 커밋해주세요.
+> 모든 PR을 `master` 브랜치로 한 번에 병합하기 때문에 history에 있는 커밋의 수는 신경 쓰지 않습니다. 편하게 커밋해주세요.
 
 ---
 transition: fade-out
