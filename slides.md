@@ -230,7 +230,7 @@ level: 2
 
 <div v-click>
 
-리드미 파일에 주의사항을 기재하거나 직접 대화를 통해 전달하는 방법은 새로운 개발자가 쉽게 <span v-mark.red="6">놓칠 수 있고, 지속적인 관리가 어렵다</span>는 단점이 있습니다.
+리드미 파일에 주의사항을 기재하거나 직접 대화를 통해 전달하는 방법은 새로운 개발자가 쉽게 <span v-mark.red="6">놓칠 수 있고, <br/>지속적인 관리가 어렵다</span>는 단점이 있습니다.
 
 이러한 변화들을 프로젝트에 새로 합류하는 개발자들에게 전달하는 더 좋은 방법은 없을까요?
 
@@ -240,7 +240,7 @@ level: 2
 layout: statement
 ---
 
-<p class="text-xl">규칙을 모두 몰라도 코드 작성 단계에서 규칙을 잘 아는 누군가가 옆에서 가이드하는 건 어떨까요?</p>
+<h2>규칙을 잘 몰라도 코드 작성 단계에서 규칙을 잘 아는 누군가가 옆에서 가이드하는 건 어떨까요?</h2>
 
 ---
 transition: fade-out
@@ -322,7 +322,7 @@ const alertMessage = "console.log()는 개발 환경에서만 사용해주세요
 <h6 class="opacity-40 pt-4">PROS</h6>
 
 - 관리가 용이합니다.
-- 복잡한 비즈니스 요구사항에 대해 구현이 가능합니다
+- 복잡한 비즈니스 요구사항에 대한 구현이 비교적 간단합니다.
 
 <h6 class="opacity-40">PROS</h6>
 
@@ -398,9 +398,36 @@ transition: fade-out
 
 <br />
 
-편의를 위해 작업에 필요한 파일을 자동으로 생성하는 CLI를 제공합니다.
+편의를 위해 작업에 필요한 파일을 자동으로 생성하는 CLI를 제공하며 문서를 업데이트하는 CLI도 함께 제공합니다.
 
-또한 문서를 업데이트하는 CLI도 제공합니다.
+자동으로 생성되는 파일의 내용은 `tasks/rule/templates` 폴더의 `_doc.md`, `_rule.js`, `_test.js` 파일을 기반으로 생성됩니다.
+
+```js twoslash
+// tasks/rule/templates/_test.js의 간략한 예시
+const { test } = require('../../utils');
+const rule = require('../../../lib/rules/<%= ruleId %>'),
+  RuleTester = require('eslint').RuleTester;
+
+const ruleTester = new RuleTester();
+
+ruleTester.run('<%= ruleId %>', rule, {
+  valid: [].concat(
+    // warning을 트리거하지 않는 코드를 작성해주세요.
+    test({
+      code: `<%= validCode %>`,
+    }),
+  ),
+  invalid: [].concat(
+    // warning을 트리거하는 코드를 작성해주세요.
+    test({
+      code: `<%= invalidCode %>`,
+      errors: [{ messageId: 'anyMessageIdHere' }], // 규칙 파일에서 정의한 messageId를 가져옵니다.
+      output: `<%= fixedCode %>`,
+    }),
+  ),
+});
+
+```
 
 ---
 transition: fade-out
@@ -586,13 +613,19 @@ Espree AST만 읽을 수 있다면 ESLint 규칙을 쉽게 만들 수 있습니�
 transition: fade-out
 ---
 
+### 규칙 작성
+
+<br />
+
 ```js twoslash
 console.log('아키드로우');
 console.log('archidraw');
 import { A } from 'archidraw-dev-team';
 ```
 
-위 코드처럼 사내에서 어쩔 수 없이 `archidraw-*` 형식의 이름의 패키지를 사용하는 경우나 콘솔이나 변수명으로 사용할 때는 어떻게 해야 하는지도 감이 옵니다.
+위 코드처럼 사내에서 어쩔 수 없이 `archidraw-*` 형식의 이름의 패키지를 사용하는 경우나 콘솔이나 변수명으로 사용할 때에 대한 대응도 몇 줄 안 되는 코드로 대응할 수 있습니다.
+
+<br />
 
 <div v-click>
 
@@ -953,7 +986,7 @@ npm run update:eslint-docs
 
 버그 수정을 할 땐 반드시 문서가 변경될 필요는 없지만, 기존 문서를 훑어보고 <span v-mark.red="6">수정해야 할 내용이 있는지 확인</span>하는 것이 좋습니다.
 
-다양한 프로젝트에서 사용되므로 웬만하면 규칙의 이름을 변경하지 마세요. 이 부분에 대해서 CLI를 제공하지 않는 이유이기도 합니다.
+이미 작성된 규칙은 여러 프로젝트에서 사용되고 있으므로 웬만하면 규칙의 이름을 변경하지 마세요. 이 부분에 대해서 CLI를 제공하지 않는 이유이기도 합니다.
 
 </div>
 
@@ -1058,15 +1091,15 @@ transition: fade-out
 
 ## 코드 퀄리티 유지
 
-코드 퀄리티를 유지하기 위해 딱히 해야 할 작업은 없습니다. 기본적으로 git hook을 이용해 품질을 검사하기 때문입니다.
+기본적으로 git hook을 이용해 코드를 검사하기 때문에 코드 퀄리티를 유지하기 위해 신경 써야 할 건 없습니다.
 
-하지만 작업 도중 확인해보고 싶다면 아래 명령어를 실행하면 됩니다:
+만약, 작업 도중 컨벤션에 맞게 작성하고 있는지 확인해보고 싶다면 아래 명령어를 실행하면 됩니다:
 
 ```bash
 npm run all-in-one
 ```
 
-위 명령어는 다음 방법으로 전체적인 코드의 품질을 검사합니다.
+위 명령어는 다음 방법으로 전체적인 코드의 퀄리티를 검사합니다.
 
 ---
 transition: slide-up
